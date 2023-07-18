@@ -53,11 +53,12 @@ function acsab_init(){
 }
 }
 
-// Include the testimonial custom fields.
-require_once(  'lib/acf.php' );
 
-// Include the testimonial custom post type.
+// Include the custom post types.
 require_once(  'lib/cpt.php' );
+
+// Include the custom fields.
+require_once(  'lib/acf.php' );
 
 
 function acsab($atts){
