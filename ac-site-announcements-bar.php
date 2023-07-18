@@ -28,7 +28,9 @@
 
 defined('ABSPATH') or die('You do not have the required permissions');
 
-if(!class_exists('acf_pro') && !class_exists('acf'))
+add_action('init', 'acsab_init', 0);
+function acsab_init(){
+    if((! is_plugin_active('advanced-custom-fields/acf.php'))&& ( ! is_plugin_active('advanced-custom-fields-pro/acf.php')))
 {
     // Define path and URL to the ACF plugin.
     define( 'ACSAB_ACF_PATH', 'inc/acf/' );
@@ -36,9 +38,6 @@ if(!class_exists('acf_pro') && !class_exists('acf'))
 
     // Include the ACF plugin.
     require_once( ACSAB_ACF_PATH . 'acf.php' );
-
-    // Include the testimonial custom fields.
-    require_once(  'lib/acf.php' );
 
     // Customize the url setting to fix incorrect asset URLs.
     add_filter('acf/settings/url', 'acsab_acf_settings_url');
@@ -52,6 +51,10 @@ if(!class_exists('acf_pro') && !class_exists('acf'))
         //return false;
     }
 }
+}
+
+// Include the testimonial custom fields.
+require_once(  'lib/acf.php' );
 
 // Include the testimonial custom post type.
 require_once(  'lib/cpt.php' );
