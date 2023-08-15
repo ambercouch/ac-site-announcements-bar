@@ -60,12 +60,65 @@ require_once(  'lib/cpt.php' );
 // Include the custom fields.
 require_once(  'lib/acf.php' );
 
+function act_add_footer_styles() {
+    wp_register_style('act_styles', plugin_dir_url( __FILE__ ) . 'assets/css/acsab-styles.css', array(), filemtime(plugin_dir_path( __FILE__ ) . 'assets/css/acsab-styles.css') );
+    wp_enqueue_style('act_styles');
+    wp_register_style('acsab-animate', plugin_dir_url( __FILE__ ) . 'assets/css/animate.compat.css', array(), filemtime(plugin_dir_path( __FILE__ ) . 'assets/css/animate.compat.css') );
+    wp_enqueue_style('acsab-animate');
+}
+add_action( 'wp_footer',  'act_add_footer_styles'  );
+
 
 function acsab($atts){
+    $output = '';
+    global $wp_query;
+    $temp_q = $wp_query;
+    $wp_query = null;
+    $wp_query = new WP_Query();
+    $wp_query->query(array(
+        'post_type' => 'acsab-announcement',
+        'post_status' => 'publish',
+        'showposts' => 1,
+    ));
+    if (have_posts()) :
 
+        $output .= '<style>';
+        $output .= 'body{margin-top:32px;}';
+        $output .= '</style>';
+
+//        add_filter( 'body_class', function( $classes ) {
+//            return array_merge( $classes, array( 'has-acsab-announcement-bar' ) );
+//        } );
+
+        while (have_posts()):
+            the_post();
+    $announcement = get_field('announcement_text');
+    $linkUrl = get_field('announcement_link_url');
+    $linkText = get_field('announcement_link_text');
+    $announcementBtn = "<span class='c-btn--announcement' >";
+    $announcementBtn .= "<a href='".$linkUrl."'>" . $linkText . "</a>";
+    $announcementBtn .= "</span>";
+            ob_start();
+            ?>
+
+         <div class="c-acsab-announcement-bar ">
+          <div class="c-acsab-announcement-bar__content  animated backInRight">
+             <?php echo wpautop($announcement . ' ' . $announcementBtn) ?>
+          </div>
+         </div>
+
+<?php
+            $output .= ob_get_contents();
+            ob_end_clean();
+        endwhile;
+    endif;
+
+    $wp_query = $temp_q;
+
+   echo $output ;
 }
 
-//add_shortcode('ac_testimonials', 'ac_testimonail');
+add_action('wp_body_open', 'acsab', 0);
 
 
 
